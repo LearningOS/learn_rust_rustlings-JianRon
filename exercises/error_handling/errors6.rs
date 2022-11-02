@@ -21,6 +21,7 @@ enum ParsePosNonzeroError {
 
 impl ParsePosNonzeroError {
     // TODO: add another error conversion function here.
+    fn from_creation() -> 
 }
 
 fn parse_pos_nonzero(s: &str)
