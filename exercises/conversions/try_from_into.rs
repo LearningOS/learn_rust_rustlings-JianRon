@@ -21,7 +21,6 @@ enum IntoColorError {
     IntConversion,
 }
 
-// I AM NOT DONE
 
 // Your task is to complete this implementation
 // and return an Ok result of inner type Color.
@@ -36,6 +35,17 @@ enum IntoColorError {
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        let t1 = tuple.0.try_into();
+        let t2 = tuple.1.try_into();
+        let t3 = tuple.2.try_into();
+        match (t1, t2, t3) {
+            (Ok(T1), Ok(T2), Ok(T3)) => Ok(Color{
+                red: T1,
+                green: T2,
+                blue: T3, 
+            }),
+            _ => Err(IntoColorError::IntConversion),
+        }
     }
 }
 
@@ -43,6 +53,22 @@ impl TryFrom<(i16, i16, i16)> for Color {
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        let r: Vec<Result<u8,_>> = arr.into_iter().map(|x: &i16| (*x).try_into()).collect();
+        let t = r.iter().fold(Vec::new(), |mut acc, x| {
+            if let Ok(t) = x {
+                acc.push(*t);
+            }
+            acc
+        });
+        if t.len() != 3 {
+            Err(IntoColorError::IntConversion)
+        } else {
+            Ok(Color{
+                red: t[0],
+                green: t[1],
+                blue: t[2],
+            })
+        }
     }
 }
 
@@ -50,6 +76,26 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = IntoColorError;
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        if slice.len() != 3 {
+            Err(IntoColorError::BadLen)
+        } else {
+            let r: Vec<Result<u8,_>> = slice.into_iter().map(|x: &i16| (*x).try_into()).collect();
+            let t = r.iter().fold(Vec::new(), |mut acc, x| {
+                if let Ok(t) = x {
+                    acc.push(*t);
+                }
+                acc
+            });
+            if t.len() != 3 {
+                Err(IntoColorError::IntConversion)
+            } else {
+                Ok(Color{
+                    red: t[0],
+                    green: t[1],
+                    blue: t[2],
+                })
+            }
+        }
     }
 }
 
